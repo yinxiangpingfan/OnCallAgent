@@ -1,0 +1,17 @@
+{
+    "server": { 
+        "host": "localhost",
+        "port": 8819
+    },
+    "embedder":{
+        "host": "localhost",    
+        "port": 11434,
+        "model": "nomic-embed-text",
+        "dimension": 384
+    },
+    "qdrant":{
+        "host": "localhost",
+        "port": 6334,
+        "collection": "oncallagent"
+    }
+}

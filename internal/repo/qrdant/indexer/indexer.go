@@ -2,6 +2,7 @@ package indexer
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cloudwego/eino-ext/components/embedding/ollama"
 	"github.com/qdrant/go-client/qdrant"
@@ -23,4 +24,13 @@ func NewQdrantIndexer(ctx context.Context, client *qdrant.Client, embedder ollam
 			},
 		},
 	})
+}
+
+func AddVector(ctx context.Context, client *qdrant.Client, points *qdrant.UpsertPoints) error {
+	res, err := client.Upsert(ctx, points)
+	if err != nil {
+		return err
+	}
+	fmt.Println(res)
+	return nil
 }

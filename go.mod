@@ -3,8 +3,9 @@ module OnCallAgent
 go 1.25.3
 
 require (
+	github.com/cloudwego/eino-ext/components/document/transformer/splitter/markdown v0.0.0-20260416081055-0ebab92e14f2
 	github.com/cloudwego/eino-ext/components/embedding/ollama v0.0.0-20260416081055-0ebab92e14f2
-	github.com/cloudwego/eino-ext/components/indexer/qdrant v0.0.0-20260416081055-0ebab92e14f2
+	github.com/google/uuid v1.6.0
 	github.com/qdrant/go-client v1.17.1
 	github.com/spf13/viper v1.21.0
 )

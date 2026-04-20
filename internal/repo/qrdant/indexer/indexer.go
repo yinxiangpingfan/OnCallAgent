@@ -12,8 +12,25 @@ const (
 	CollectionName = "oncallagent"
 )
 
-func NewQdrantIndexer(ctx context.Context, client *qdrant.Client, embedder ollama.Embedder) error {
-	return client.CreateCollection(ctx, &qdrant.CreateCollection{
+type QdranServer interface {
+	NewQdrantIndexer(ctx context.Context) error
+	AddVector(ctx context.Context, points *qdrant.UpsertPoints) error
+}
+
+type qdrantServer struct {
+	client   *qdrant.Client
+	embedder ollama.Embedder
+}
+
+func NewQdranServer(ctx context.Context, client *qdrant.Client, embedder ollama.Embedder) qdrantServer {
+	return qdrantServer{
+		client:   client,
+		embedder: embedder,
+	}
+}
+
+func (qs qdrantServer) NewQdrantIndexer(ctx context.Context) error {
+	return qs.client.CreateCollection(ctx, &qdrant.CreateCollection{
 		CollectionName: CollectionName,
 		VectorsConfig: &qdrant.VectorsConfig{
 			Config: &qdrant.VectorsConfig_Params{
@@ -27,8 +44,8 @@ func NewQdrantIndexer(ctx context.Context, client *qdrant.Client, embedder ollam
 }
 
 // AddVector 添加向量
-func AddVector(ctx context.Context, client *qdrant.Client, points *qdrant.UpsertPoints) error {
-	res, err := client.Upsert(ctx, points)
+func (qs qdrantServer) AddVector(ctx context.Context, points *qdrant.UpsertPoints) error {
+	res, err := qs.client.Upsert(ctx, points)
 	if err != nil {
 		return err
 	}

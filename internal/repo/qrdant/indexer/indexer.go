@@ -26,6 +26,7 @@ func NewQdrantIndexer(ctx context.Context, client *qdrant.Client, embedder ollam
 	})
 }
 
+// AddVector 添加向量
 func AddVector(ctx context.Context, client *qdrant.Client, points *qdrant.UpsertPoints) error {
 	res, err := client.Upsert(ctx, points)
 	if err != nil {

@@ -33,13 +33,18 @@ services:
     container_name: ollama
     ports:
       - "11434:11434"
+    environment:
+      - EMBEDDING_MODEL=${EMBEDDER_MODEL:-nomic-embed-text}
     volumes:
       - ollama-data:/root/.ollama
+      - ./scripts/ollama-entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:11434/api/version || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - oncall-network
     restart: unless-stopped

@@ -90,8 +90,12 @@ func (k *knowledgeIndex) textToQdrantIndex() func(ctx context.Context, req []*sc
 			//归一
 			res = k.embederServer.Normalize(res)
 
+			contentAny := make([]any, len(content))
+			for i, v := range content {
+				contentAny[i] = v
+			}
 			payload := qdrant.NewValueMap(map[string]any{
-				"content": content,
+				"content": contentAny,
 				"title":   title,
 			})
 			points[i] = &qdrant.PointStruct{

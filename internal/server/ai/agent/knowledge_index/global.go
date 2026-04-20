@@ -11,7 +11,7 @@ import (
 
 type knowledgeIndex struct {
 	embederServer embeder.EmbeddingServer
-	qdrantServer  indexer.QdranServer
+	qdrantServer  indexer.QdranIndexerServer
 }
 
 type KnowledgeIndex interface {
@@ -19,7 +19,7 @@ type KnowledgeIndex interface {
 	NewFileLoader(ctx context.Context) (document.Loader, error)
 }
 
-func NewKnowledgeIndex(embederServer embeder.EmbeddingServer, indexer indexer.QdranServer) KnowledgeIndex {
+func NewKnowledgeIndex(embederServer embeder.EmbeddingServer, indexer indexer.QdranIndexerServer) KnowledgeIndex {
 	return &knowledgeIndex{
 		embederServer: embederServer,
 		qdrantServer:  indexer,

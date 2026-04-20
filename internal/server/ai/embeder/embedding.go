@@ -63,6 +63,9 @@ func (e *embedding) Normalize(embeddings []float64) []float64 {
 		mo += v * v
 	}
 	mo = math.Sqrt(mo) //向量模长
+	if mo == 0 {
+		return embeddings // 零向量，跳过，避免除零
+	}
 	for i := range embeddings {
 		embeddings[i] /= mo
 	}

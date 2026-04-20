@@ -1,0 +1,26 @@
+# Binaries
+/bin/
+/server
+
+# Dependencies
+/vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (sensitive)
+.env
+config.json
+
+# Uploads
+/uploads/
+
+# Logs
+*.log

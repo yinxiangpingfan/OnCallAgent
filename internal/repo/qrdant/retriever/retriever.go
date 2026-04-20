@@ -30,18 +30,6 @@ func (rs retrieverServer) NewRetrieverServer(ctx context.Context, collectionName
 	})
 }
 
-type retriever struct {
-	retriever *qdrant_retriever.Retriever
-}
-
-func (rs retriever) Query(ctx context.Context, query string) ([]*schema.Document, error) {
-	res, err := rs.retriever.Retrieve(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}
-
 type embeddderNormalize struct {
 	embedder ollama.Embedder
 }

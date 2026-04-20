@@ -12,6 +12,7 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Embedder EmbedderConfig `mapstructure:"embedder"`
 	Qdrant   QdrantConfig   `mapstructure:"qdrant"`
+	OpenAI   OpenAIConfig   `mapstructure:"openai"`
 }
 
 // ServerConfig 服务器配置
@@ -33,6 +34,13 @@ type QdrantConfig struct {
 	Host       string `mapstructure:"host"`
 	Port       int    `mapstructure:"port"`
 	Collection string `mapstructure:"collection"`
+}
+
+// OpenAIConfig OpenAI API 配置
+type OpenAIConfig struct {
+	APIKey  string `mapstructure:"api_key"`
+	Model   string `mapstructure:"model"`
+	APIBase string `mapstructure:"api_base"`
 }
 
 // InitConfig 从配置文件初始化配置
@@ -119,6 +127,11 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("qdrant.host", "localhost")
 	v.SetDefault("qdrant.port", 6334)
 	v.SetDefault("qdrant.collection", "oncallagent")
+
+	// OpenAI 默认值
+	v.SetDefault("openai.api_key", "")
+	v.SetDefault("openai.model", "minimax/minimax-m2.1")
+	v.SetDefault("openai.api_base", "https://api.qnaigc.com/v1")
 }
 
 // bindEnvVars 绑定环境变量
@@ -138,6 +151,11 @@ func bindEnvVars(v *viper.Viper) {
 	_ = v.BindEnv("qdrant.host", "QDRANT_HOST")
 	_ = v.BindEnv("qdrant.port", "QDRANT_PORT")
 	_ = v.BindEnv("qdrant.collection", "QDRANT_COLLECTION")
+
+	// OpenAI 环境变量
+	_ = v.BindEnv("openai.api_key", "OPENAI_API_KEY")
+	_ = v.BindEnv("openai.model", "OPENAI_MODEL")
+	_ = v.BindEnv("openai.api_base", "OPENAI_API_BASE")
 }
 
 // GetServerAddr 获取服务器完整地址

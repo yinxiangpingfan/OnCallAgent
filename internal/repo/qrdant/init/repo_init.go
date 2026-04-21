@@ -1,4 +1,4 @@
-package init
+package initQdrantRepo
 
 import (
 	"OnCallAgent/pkg/config"

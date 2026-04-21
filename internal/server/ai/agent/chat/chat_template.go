@@ -10,7 +10,7 @@ import (
 func newChatTemplateLambda(ctx context.Context) prompt.ChatTemplate {
 	template := []schema.MessagesTemplate{
 		schema.SystemMessage(systemPrompt),
-		schema.MessagesPlaceholder("history", true),
+		schema.MessagesPlaceholder("history", false),
 		schema.UserMessage("{content}"),
 	}
 	return prompt.FromMessages(schema.FString, template...)

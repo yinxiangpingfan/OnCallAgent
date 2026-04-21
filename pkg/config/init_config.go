@@ -165,7 +165,7 @@ func (c *Config) GetServerAddr() string {
 
 // GetEmbedderAddr 获取嵌入模型服务地址
 func (c *Config) GetEmbedderAddr() string {
-	return fmt.Sprintf("%s:%d", c.Embedder.Host, c.Embedder.Port)
+	return fmt.Sprintf("http://%s:%d", c.Embedder.Host, c.Embedder.Port)
 }
 
 // GetQdrantAddr 获取 Qdrant 服务地址

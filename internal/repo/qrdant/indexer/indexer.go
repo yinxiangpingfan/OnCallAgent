@@ -30,17 +30,29 @@ func NewQdranIndexerServer(ctx context.Context, client *qdrant.Client, embedder 
 }
 
 func (qs qdrantIndexerServer) NewQdrantIndexer(ctx context.Context) error {
-	return qs.client.CreateCollection(ctx, &qdrant.CreateCollection{
-		CollectionName: CollectionName,
-		VectorsConfig: &qdrant.VectorsConfig{
-			Config: &qdrant.VectorsConfig_Params{
-				Params: &qdrant.VectorParams{
-					Size:     768,
-					Distance: qdrant.Distance_Dot, //使用内积
+	if exists, err := qs.client.CollectionExists(ctx, CollectionName); err != nil {
+		return err
+	} else {
+		if exists {
+			// 集合已存在，删除集合
+			err = qs.client.DeleteCollection(ctx, CollectionName)
+			if err != nil {
+				return err
+			}
+		}
+		qs.client.CreateCollection(ctx, &qdrant.CreateCollection{
+			CollectionName: CollectionName,
+			VectorsConfig: &qdrant.VectorsConfig{
+				Config: &qdrant.VectorsConfig_Params{
+					Params: &qdrant.VectorParams{
+						Size:     768,
+						Distance: qdrant.Distance_Dot, //使用内积
+					},
 				},
 			},
-		},
-	})
+		})
+	}
+	return nil
 }
 
 // AddVector 添加向量

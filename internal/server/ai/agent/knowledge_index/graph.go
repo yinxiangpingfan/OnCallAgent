@@ -85,10 +85,8 @@ func (k *knowledgeIndex) textToQdrantIndex() func(ctx context.Context, req []*sc
 			}
 			res = k.embederServer.Normalize(res)
 
-			// content 存为 string，retriever 用 GetStringValue() 读取
 			payload := qdrant.NewValueMap(map[string]any{
-				"content": strings.Join(body, "\n"),
-				"title":   title,
+				"content": title + "\n" + strings.Join(body, "\n"),
 			})
 			points = append(points, &qdrant.PointStruct{
 				Id: &qdrant.PointId{

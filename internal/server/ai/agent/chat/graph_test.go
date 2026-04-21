@@ -59,7 +59,7 @@ func TestGraphConstruction(t *testing.T) {
 	output, err := runner.Invoke(ctx, &UserMessage{
 		ID:      "1",
 		History: []*schema.Message{},
-		Query:   "12000000002代表的是啥错误",
+		Query:   "服务错误码与常见原因?",
 	})
 	if err != nil {
 		t.Fatalf("Failed to invoke chat agent: %v", err)

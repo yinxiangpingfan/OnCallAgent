@@ -57,62 +57,52 @@ func (k *knowledgeIndex) NewGraph(ctx context.Context) (r compose.Runnable[docum
 
 func (k *knowledgeIndex) textToQdrantIndex() func(ctx context.Context, req []*schema.Document) (bool, error) {
 	return func(ctx context.Context, req []*schema.Document) (bool, error) {
-		//向量化
-		points := make([]*qdrant.PointStruct, len(req))
-		for i, doc := range req {
-			content := strings.Split(doc.Content, "\n")
-			if len(content) == 0 {
+		points := make([]*qdrant.PointStruct, 0, len(req))
+		for _, doc := range req {
+			lines := strings.Split(doc.Content, "\n")
+			if len(lines) == 0 {
 				continue
 			}
-			title := content[0]
-			content = content[1:]
+			title := lines[0]
 			// 只处理一级标题
 			if !strings.HasPrefix(title, "#") {
 				continue
 			}
-			title = title[2:]
-			//向量化
-			temp := make([]string, 2)
-			temp[0] = title
-			temp[1] = title //title权重为2
-			for _, v := range content {
-				temp = append(temp, v)
-			}
+			title = strings.TrimPrefix(title, "# ")
+			body := lines[1:]
+
+			// title 权重为 2，其余行各一份
+			temp := []string{title, title}
+			temp = append(temp, body...)
+
 			t, err := k.embederServer.Embedding(ctx, temp)
 			if err != nil {
-				return false, fmt.Errorf("knowledge_index:Graph:添加QdrantIndexer节点向量化失败%v", err)
+				return false, fmt.Errorf("knowledge_index:Graph:向量化失败: %w", err)
 			}
-			//求算数平均
 			res, err := k.embederServer.Average(t)
 			if err != nil {
-				return false, fmt.Errorf("knowledge_index:Graph:添加QdrantIndexer节点求算数平均失败%v", err)
+				return false, fmt.Errorf("knowledge_index:Graph:求均值失败: %w", err)
 			}
-			//归一
 			res = k.embederServer.Normalize(res)
 
-			contentAny := make([]any, len(content))
-			for i, v := range content {
-				contentAny[i] = v
-			}
+			// content 存为 string，retriever 用 GetStringValue() 读取
 			payload := qdrant.NewValueMap(map[string]any{
-				"content": contentAny,
+				"content": strings.Join(body, "\n"),
 				"title":   title,
 			})
-			points[i] = &qdrant.PointStruct{
+			points = append(points, &qdrant.PointStruct{
 				Id: &qdrant.PointId{
-					PointIdOptions: &qdrant.PointId_Uuid{
-						Uuid: doc.ID,
-					},
+					PointIdOptions: &qdrant.PointId_Uuid{Uuid: doc.ID},
 				},
 				Vectors: &qdrant.Vectors{VectorsOptions: &qdrant.Vectors_Vector{Vector: &qdrant.Vector{Vector: &qdrant.Vector_Dense{Dense: &qdrant.DenseVector{Data: tool.ToFloat32(res)}}}}},
 				Payload: payload,
-			}
+			})
 		}
-		err := k.qdrantServer.AddVector(ctx, &qdrant.UpsertPoints{
-			Points: points,
-		})
-		if err != nil {
-			return false, fmt.Errorf("knowledge_index:Graph:添加QdrantIndexer节点添加向量失败%v", err)
+		if len(points) == 0 {
+			return true, nil
+		}
+		if err := k.qdrantServer.AddVector(ctx, &qdrant.UpsertPoints{Points: points}); err != nil {
+			return false, fmt.Errorf("knowledge_index:Graph:写入Qdrant失败: %w", err)
 		}
 		return true, nil
 	}

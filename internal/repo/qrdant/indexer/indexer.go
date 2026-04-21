@@ -57,6 +57,7 @@ func (qs qdrantIndexerServer) NewQdrantIndexer(ctx context.Context) error {
 
 // AddVector 添加向量
 func (qs qdrantIndexerServer) AddVector(ctx context.Context, points *qdrant.UpsertPoints) error {
+	points.CollectionName = CollectionName
 	res, err := qs.client.Upsert(ctx, points)
 	if err != nil {
 		return err

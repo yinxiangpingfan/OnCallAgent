@@ -53,6 +53,9 @@ func TestGraphConstruction(t *testing.T) {
 	_, err = runner1.Invoke(ctx, document.Source{
 		URI: "../../../../../docs/告警处理手册.md",
 	})
+	if err != nil {
+		t.Fatalf("Failed to index knowledge: %v", err)
+	}
 	output, err := runner.Invoke(ctx, &UserMessage{
 		ID:      "1",
 		History: []*schema.Message{},

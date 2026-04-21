@@ -41,17 +41,21 @@ func (e *embedding) Embedding(ctx context.Context, text []string) ([][]float64, 
 
 // Average 向量算数平均数
 func (e *embedding) Average(embeddings [][]float64) ([]float64, error) {
-	avg := make([]float64, 0)
-	lenEmbeddings := len(embeddings[0])
-	for i := range embeddings[0] {
-		if len(embeddings[i]) != lenEmbeddings {
-			return nil, fmt.Errorf("embeddings %d has different length", i)
+	if len(embeddings) == 0 {
+		return nil, fmt.Errorf("no embeddings provided")
+	}
+	dim := len(embeddings[0])
+	avg := make([]float64, dim)
+	for j, emb := range embeddings {
+		if len(emb) != dim {
+			return nil, fmt.Errorf("embedding %d has different length: got %d, expected %d", j, len(emb), dim)
 		}
-		var sum float64
-		for _, v := range embeddings {
-			sum += v[i]
+		for i, v := range emb {
+			avg[i] += v
 		}
-		avg = append(avg, sum/float64(len(embeddings)))
+	}
+	for i := range avg {
+		avg[i] /= float64(len(embeddings))
 	}
 	return avg, nil
 }

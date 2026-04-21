@@ -1,0 +1,75 @@
+# OnCallAgent Docker Compose Configuration
+# Use .env file for configuration overrides
+
+services:
+  server:
+    build:
+      context: .
+      target: final
+    container_name: oncall-agent
+    ports:
+      - "${SERVER_PORT:-8819}:${SERVER_PORT:-8819}"
+    environment:
+      - SERVER_HOST=${SERVER_HOST:-0.0.0.0}
+      - SERVER_PORT=${SERVER_PORT:-8819}
+      - EMBEDDER_HOST=${EMBEDDER_HOST:-ollama}
+      - EMBEDDER_PORT=${EMBEDDER_PORT:-11434}
+      - EMBEDDER_MODEL=${EMBEDDER_MODEL:-nomic-embed-text}
+      - EMBEDDER_DIMENSION=${EMBEDDER_DIMENSION:-384}
+      - QDRANT_HOST=${QDRANT_HOST:-qdrant}
+      - QDRANT_PORT=${QDRANT_PORT:-6334}
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION:-oncallagent}
+    depends_on:
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    networks:
+      - oncall-network
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - EMBEDDING_MODEL=${EMBEDDER_MODEL:-nomic-embed-text}
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./scripts/ollama-entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/version || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - oncall-network
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6333/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oncall-network
+    restart: unless-stopped
+
+networks:
+  oncall-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
+  qdrant-data:

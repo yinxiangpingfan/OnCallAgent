@@ -21,9 +21,13 @@ func (u chatServer) newReactAgentLambda(ctx context.Context) (node *compose.Lamb
 	if err != nil {
 		return nil, err
 	}
+	retrieveTool, err := tools.RetrieveTool()
+	if err != nil {
+		return nil, err
+	}
 	// 初始化所需的 tools
 	tools := compose.ToolsNodeConfig{
-		Tools: []tool.BaseTool{timeTool},
+		Tools: []tool.BaseTool{timeTool, retrieveTool},
 	}
 
 	// 创建 agent

@@ -18,6 +18,11 @@ func NewExecuteAgent(ctx context.Context, model *openai.ChatModel) (adk.Agent, e
 		return nil, err
 	}
 	toolls = append(toolls, timeTool)
+	retrieveTool, err := tools.RetrieveTool()
+	if err != nil {
+		return nil, err
+	}
+	toolls = append(toolls, retrieveTool)
 	return planexecute.NewExecutor(ctx, &planexecute.ExecutorConfig{
 		Model: model,
 		ToolsConfig: adk.ToolsConfig{

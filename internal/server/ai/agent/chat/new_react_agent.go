@@ -1,9 +1,11 @@
 package chat
 
 import (
+	"OnCallAgent/internal/server/ai/tools"
 	"OnCallAgent/internal/server/model"
 	"context"
 
+	"github.com/cloudwego/eino/components/tool"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/flow/agent/react"
 )
@@ -15,10 +17,13 @@ func (u chatServer) newReactAgentLambda(ctx context.Context) (node *compose.Lamb
 		return nil, err
 	}
 
+	timeTool, err := tools.TimeTool(ctx)
+	if err != nil {
+		return nil, err
+	}
 	// 初始化所需的 tools
 	tools := compose.ToolsNodeConfig{
-		// InvokableTools:  []tool.InvokableTool{mytool},
-		// StreamableTools: []tool.StreamableTool{myStreamTool},
+		Tools: []tool.BaseTool{timeTool},
 	}
 
 	// 创建 agent

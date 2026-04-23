@@ -1,6 +1,7 @@
 package planexecutereplan
 
 import (
+	"OnCallAgent/internal/server/ai/tools"
 	"context"
 
 	"github.com/cloudwego/eino-ext/components/model/openai"
@@ -11,12 +12,17 @@ import (
 )
 
 func NewExecuteAgent(ctx context.Context, model *openai.ChatModel) (adk.Agent, error) {
-	tools := make([]tool.BaseTool, 0)
+	toolls := make([]tool.BaseTool, 0)
+	timeTool, err := tools.TimeTool(ctx)
+	if err != nil {
+		return nil, err
+	}
+	toolls = append(toolls, timeTool)
 	return planexecute.NewExecutor(ctx, &planexecute.ExecutorConfig{
 		Model: model,
 		ToolsConfig: adk.ToolsConfig{
 			ToolsNodeConfig: compose.ToolsNodeConfig{
-				Tools: tools,
+				Tools: toolls,
 			},
 		},
 		MaxIterations: 999999,

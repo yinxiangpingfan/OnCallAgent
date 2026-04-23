@@ -1,6 +1,6 @@
 module OnCallAgent
 
-go 1.25.3
+go 1.25.5
 
 require (
 	github.com/cloudwego/eino v0.7.13
@@ -9,8 +9,10 @@ require (
 	github.com/cloudwego/eino-ext/components/embedding/ollama v0.0.0-20260416081055-0ebab92e14f2
 	github.com/cloudwego/eino-ext/components/model/openai v0.1.13
 	github.com/cloudwego/eino-ext/components/retriever/qdrant v0.0.0-20260416081055-0ebab92e14f2
+	github.com/cloudwego/eino-ext/components/tool/mcp v0.0.8
 	github.com/gin-gonic/gin v1.12.0
 	github.com/google/uuid v1.6.0
+	github.com/mark3labs/mcp-go v0.49.0
 	github.com/qdrant/go-client v1.17.1
 	github.com/spf13/viper v1.21.0
 )
@@ -35,6 +37,7 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
+	github.com/google/jsonschema-go v0.4.2 // indirect
 	github.com/goph/emperror v0.17.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
@@ -62,6 +65,7 @@ require (
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.22.0 // indirect

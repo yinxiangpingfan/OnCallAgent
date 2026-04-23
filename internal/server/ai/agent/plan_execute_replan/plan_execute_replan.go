@@ -1,6 +1,7 @@
 package planexecutereplan
 
 import (
+	"OnCallAgent/pkg/config"
 	"context"
 
 	"github.com/cloudwego/eino-ext/components/model/openai"
@@ -9,12 +10,12 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-func BuildPlanExecuteReplanAgent(ctx context.Context, query string, model *openai.ChatModel) (string, []string, error) {
+func BuildPlanExecuteReplanAgent(ctx context.Context, query string, cfg config.Config, model *openai.ChatModel) (string, []string, error) {
 	planAgent, err := NewPlanAgent(ctx, model)
 	if err != nil {
 		return "", nil, err
 	}
-	executeAgent, err := NewExecuteAgent(ctx, model)
+	executeAgent, err := NewExecuteAgent(ctx, model, &cfg)
 	if err != nil {
 		return "", nil, err
 	}

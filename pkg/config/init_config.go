@@ -9,10 +9,11 @@ import (
 
 // Config 应用配置结构
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Embedder EmbedderConfig `mapstructure:"embedder"`
-	Qdrant   QdrantConfig   `mapstructure:"qdrant"`
-	OpenAI   OpenAIConfig   `mapstructure:"openai"`
+	Server     ServerConfig               `mapstructure:"server"`
+	Embedder   EmbedderConfig             `mapstructure:"embedder"`
+	Qdrant     QdrantConfig               `mapstructure:"qdrant"`
+	OpenAI     OpenAIConfig               `mapstructure:"openai"`
+	TencentMCP map[string]MCPServerConfig `mapstructure:"tecentmcp"`
 }
 
 // ServerConfig 服务器配置
@@ -41,6 +42,12 @@ type OpenAIConfig struct {
 	APIKey  string `mapstructure:"api_key"`
 	Model   string `mapstructure:"model"`
 	APIBase string `mapstructure:"api_base"`
+}
+
+// MCPServerConfig 单个 MCP Server 配置
+type MCPServerConfig struct {
+	Type string `mapstructure:"type"`
+	URL  string `mapstructure:"url"`
 }
 
 // InitConfig 从配置文件初始化配置
@@ -132,6 +139,10 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("openai.api_key", "")
 	v.SetDefault("openai.model", "minimax/minimax-m2.1")
 	v.SetDefault("openai.api_base", "https://api.qnaigc.com/v1")
+
+	// TencentMCP 默认值
+	v.SetDefault("tecentmcp.cls-mcp-server.type", "sse")
+	v.SetDefault("tecentmcp.cls-mcp-server.url", "")
 }
 
 // bindEnvVars 绑定环境变量
@@ -156,6 +167,10 @@ func bindEnvVars(v *viper.Viper) {
 	_ = v.BindEnv("openai.api_key", "OPENAI_API_KEY")
 	_ = v.BindEnv("openai.model", "OPENAI_MODEL")
 	_ = v.BindEnv("openai.api_base", "OPENAI_API_BASE")
+
+	// TencentMCP 环境变量
+	_ = v.BindEnv("tecentmcp.cls-mcp-server.type", "TENCENT_MCP_CLS_TYPE")
+	_ = v.BindEnv("tecentmcp.cls-mcp-server.url", "TENCENT_MCP_CLS_URL")
 }
 
 // GetServerAddr 获取服务器完整地址
@@ -171,4 +186,13 @@ func (c *Config) GetEmbedderAddr() string {
 // GetQdrantAddr 获取 Qdrant 服务地址
 func (c *Config) GetQdrantAddr() string {
 	return fmt.Sprintf("%s:%d", c.Qdrant.Host, c.Qdrant.Port)
+}
+
+// GetTencentMCPServer 获取指定名称的 Tencent MCP Server 配置
+func (c *Config) GetTencentMCPServer(name string) (MCPServerConfig, bool) {
+	if c.TencentMCP == nil {
+		return MCPServerConfig{}, false
+	}
+	srv, ok := c.TencentMCP[name]
+	return srv, ok
 }

@@ -19,6 +19,11 @@ services:
       - QDRANT_HOST=${QDRANT_HOST:-qdrant}
       - QDRANT_PORT=${QDRANT_PORT:-6334}
       - QDRANT_COLLECTION=${QDRANT_COLLECTION:-oncallagent}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-minimax/minimax-m2.1}
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.qnaigc.com/v1}
+      - TENCENT_MCP_CLS_TYPE=${TENCENT_MCP_CLS_TYPE:-sse}
+      - TENCENT_MCP_CLS_URL=${TENCENT_MCP_CLS_URL}
     depends_on:
       ollama:
         condition: service_healthy

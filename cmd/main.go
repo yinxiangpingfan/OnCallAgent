@@ -1,27 +1,16 @@
 package main
 
 import (
-	"OnCallAgent/internal/handler"
-	"OnCallAgent/internal/server/knowledge_index"
-	"log"
+	"OnCallAgent/internal/router"
+	"OnCallAgent/pkg/log"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// 初始化日志记录器
+	log := log.InitLogger("info", "log/OnCallAgent.log")
 	r := gin.Default()
-
-	uploader := knowledge_index.NewUploader(knowledge_index.UploaderConfig{
-		StoragePath: "./uploads",
-		MaxSize:     10 << 20, // 10MB
-	})
-
-	h := handler.NewHandler(uploader)
-
-	r.POST("/upload", h.UploadFile)
-
-	log.Println("Server starting on :8080")
-	if err := r.Run(":8080"); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+	// 初始化
+	router.InitRouter(r)
 }

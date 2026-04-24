@@ -10,10 +10,12 @@ require (
 	github.com/cloudwego/eino-ext/components/model/openai v0.1.13
 	github.com/cloudwego/eino-ext/components/retriever/qdrant v0.0.0-20260416081055-0ebab92e14f2
 	github.com/cloudwego/eino-ext/components/tool/mcp v0.0.8
+	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.12.0
 	github.com/google/uuid v1.6.0
 	github.com/mark3labs/mcp-go v0.49.0
 	github.com/qdrant/go-client v1.17.1
+	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/viper v1.21.0
 )
 
@@ -54,7 +56,6 @@ require (
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.0 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
-	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/slongfield/pyfmt v0.0.0-20220222012616-ea85ff4c361f // indirect
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
 	github.com/spf13/afero v1.15.0 // indirect

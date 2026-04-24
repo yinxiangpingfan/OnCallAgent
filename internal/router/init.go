@@ -1,11 +1,15 @@
 package router
 
 import (
+	"OnCallAgent/internal/handler"
+	knowledgeindex "OnCallAgent/internal/server/knowledge_index"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
-func InitRouter(r *gin.Engine) {
+func InitRouter(r *gin.Engine, loger *logrus.Logger) {
 	//cors
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
@@ -17,5 +21,9 @@ func InitRouter(r *gin.Engine) {
 			"message": "pong",
 		})
 	})
-	r.POST("/upload")
+	//文件上传
+	uploder := knowledgeindex.NewFileUploaderServer(loger)
+	uploderHandler := handler.NewFileUploader("./docs/", uploder)
+	r.POST("/upload", uploderHandler.Upload())
+
 }

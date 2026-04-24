@@ -12,5 +12,5 @@ func main() {
 	log := log.InitLogger("info", "log/OnCallAgent.log")
 	r := gin.Default()
 	// 初始化
-	router.InitRouter(r)
+	router.InitRouter(r, log)
 }

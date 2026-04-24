@@ -25,5 +25,6 @@ func InitRouter(r *gin.Engine, loger *logrus.Logger) {
 	uploder := knowledgeindex.NewFileUploaderServer(loger)
 	uploderHandler := handler.NewFileUploader("./docs/", uploder)
 	r.POST("/upload", uploderHandler.Upload())
+	//对话
 
 }

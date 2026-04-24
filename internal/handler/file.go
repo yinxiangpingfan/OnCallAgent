@@ -30,7 +30,7 @@ func (u *fileUploader) Upload() gin.HandlerFunc {
 			})
 			return
 		}
-		msg, err := u.upLoadServer.Upload(file, u.uploadPath)
+		msg, err := u.upLoadServer.Upload(ctx, file, u.uploadPath)
 		if err != nil {
 			ctx.JSON(400, gin.H{
 				"message": "上传文件失败",

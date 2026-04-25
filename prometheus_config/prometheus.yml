@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+rule_files:
+  - "alert.rules"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # 抓取 Docker 中的测试服务器
+  - job_name: "oncall-test"
+    static_configs:
+      - targets: ["test-server:2112"]

@@ -11,7 +11,7 @@ import (
 )
 
 type RetrieverServer interface {
-	NewRetrieverServer(ctx context.Context, collectionName string, embeddder ollama.Embedder, ScoreThreshold float64, limit int) (*qdrant_retriever.Retriever, error)
+	NewRetrieverServer(ctx context.Context, collectionName string, ScoreThreshold float64, limit int) (*qdrant_retriever.Retriever, error)
 }
 
 type retrieverServer struct {
@@ -26,7 +26,7 @@ func NewRetrieverServer(ctx context.Context, client *qdrant.Client, embeder olla
 	}
 }
 
-func (rs retrieverServer) NewRetrieverServer(ctx context.Context, collectionName string, embeddder ollama.Embedder, ScoreThreshold float64, limit int) (*qdrant_retriever.Retriever, error) {
+func (rs retrieverServer) NewRetrieverServer(ctx context.Context, collectionName string, ScoreThreshold float64, limit int) (*qdrant_retriever.Retriever, error) {
 	return qdrant_retriever.NewRetriever(ctx, &qdrant_retriever.Config{
 		Client:         rs.client,
 		Collection:     collectionName,

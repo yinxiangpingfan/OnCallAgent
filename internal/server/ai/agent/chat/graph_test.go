@@ -30,7 +30,7 @@ func TestGraphConstruction(t *testing.T) {
 		t.Fatalf("Failed to init embedder: %v", err)
 	}
 	retriever := retriever.NewRetrieverServer(ctx, indexer, *embedder)
-	r, err := retriever.NewRetrieverServer(ctx, "oncallagent", *embedder, 0.5, 2)
+	r, err := retriever.NewRetrieverServer(ctx, "oncallagent", 0.5, 2)
 	if err != nil {
 		t.Fatalf("Failed to init retriever: %v", err)
 	}

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"OnCallAgent/internal/server/chatServer"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,6 +47,40 @@ func (c *chatHandler) Chat() gin.HandlerFunc {
 
 func (c *chatHandler) ChatSream() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "text/event-stream")
+		ctx.Header("Cache-Control", "no-cache")
+		ctx.Header("Connection", "keep-alive")
+		var chatRequest ChatRequest
+		if err := ctx.ShouldBindJSON(&chatRequest); err != nil {
+			ctx.JSON(400, gin.H{"message": "invalid request"})
+			return
+		}
 
+		// 带缓冲 channel，避免 goroutine 在客户端断开后仍阻塞在写入
+		ch := make(chan string, 8)
+		done := make(chan struct{})
+
+		go c.chat.ChatSream(ctx.Request.Context(), chatRequest.Question, chatRequest.Id, &ch, &done)
+
+		for {
+			// 每次循环前，先看一眼 done 有没有动静
+			select {
+			case <-done:
+				return
+			default:
+			}
+			t, ok := <-ch
+			if !ok {
+				// channel 已关闭，goroutine 正常结束
+				ctx.SSEvent("message", "data: [DONE]\n\n")
+				ctx.Writer.Flush()
+				return
+			}
+			// SSE 数据格式要求（重要！）
+			event := fmt.Sprintf("data: %v\n\n", t)
+			// 发送数据到客户端
+			ctx.SSEvent("message", event)
+			ctx.Writer.Flush() // 立即刷新缓冲区
+		}
 	}
 }

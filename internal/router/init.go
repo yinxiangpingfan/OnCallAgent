@@ -5,9 +5,11 @@ import (
 	"OnCallAgent/internal/server/ai/agent/chat"
 	"OnCallAgent/internal/server/chatServer"
 	knowledgeindex "OnCallAgent/internal/server/knowledge_index"
+	"OnCallAgent/internal/server/plan"
 	"OnCallAgent/pkg/config"
 	"context"
 
+	"github.com/cloudwego/eino-ext/components/model/openai"
 	"github.com/cloudwego/eino/components/document"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
@@ -16,7 +18,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config *config.Config, runner compose.Runnable[document.Source, bool], runnerChat compose.Runnable[*chat.UserMessage, *schema.Message]) {
+func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config *config.Config, runner compose.Runnable[document.Source, bool], runnerChat compose.Runnable[*chat.UserMessage, *schema.Message], model *openai.ChatModel) {
 	//cors
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
@@ -37,4 +39,8 @@ func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config
 	chaterHandler := handler.NewChatHandler(chater)
 	r.POST("/chat", chaterHandler.Chat())
 	r.GET("/chatStream", chaterHandler.ChatSream())
+	//运维
+	planer := plan.NewPlanServer(*config, model, loger)
+	planerH := handler.NewPlanHandler(planer)
+	r.GET("/plan", planerH.Plan())
 }

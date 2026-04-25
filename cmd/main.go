@@ -8,6 +8,7 @@ import (
 	"OnCallAgent/internal/server/ai/agent/chat"
 	knowledgeindex "OnCallAgent/internal/server/ai/agent/knowledge_index"
 	"OnCallAgent/internal/server/ai/embeder"
+	"OnCallAgent/internal/server/model"
 	"OnCallAgent/pkg/config"
 	"OnCallAgent/pkg/log"
 	"context"
@@ -58,7 +59,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	//初始化model
+	chatModel, err := model.NewOpenaiModel(ctx, config)
+	if err != nil {
+		panic(err)
+	}
 	// 初始化gin
 	r := gin.Default()
-	router.InitRouter(ctx, r, log, config, runnerRAG, runner)
+	router.InitRouter(ctx, r, log, config, runnerRAG, runner, chatModel)
 }

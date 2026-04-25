@@ -38,7 +38,7 @@ func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config
 	chater := chatServer.NewChatServer(loger, runnerChat)
 	chaterHandler := handler.NewChatHandler(chater)
 	r.POST("/chat", chaterHandler.Chat())
-	r.GET("/chatStream", chaterHandler.ChatSream())
+	r.POST("/chatStream", chaterHandler.ChatSream())
 	//运维
 	planer := plan.NewPlanServer(*config, model, loger)
 	planerH := handler.NewPlanHandler(planer)

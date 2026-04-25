@@ -50,9 +50,9 @@ type SimplifiedAlert struct {
 }
 
 // queryPrometheusAlerts 查询 Prometheus 告警
-func queryPrometheusAlerts() (PrometheusAlertsResult, error) {
+func queryPrometheusAlerts(url string) (PrometheusAlertsResult, error) {
 	var result PrometheusAlertsResult
-	baseURL := "http://prometheus:9090"
+	baseURL := url
 	alertsURL := baseURL + "/api/v1/alerts"
 	client := &http.Client{
 		Timeout: 10 * time.Second,
@@ -97,11 +97,11 @@ func calculateActiveTime(activeAt string) string {
 }
 
 // 创建工具
-func NewPrometheusAlertsTool() (tool.InvokableTool, error) {
+func NewPrometheusAlertsTool(url string) (tool.InvokableTool, error) {
 	return utils.InferTool("query_prometheus_alerts",
 		"Query active alerts from Prometheus alerting system. This tool retrieves all currently active/firing alerts including their labels, annotations, state, and values. Use this tool when you need to check what alerts are currently firing, investigate alert conditions, or monitor alert status.",
 		func(ctx context.Context, input struct{}) (output string, err error) {
-			result, err := queryPrometheusAlerts()
+			result, err := queryPrometheusAlerts(url)
 			if err != nil {
 				return "", err
 			}

@@ -29,7 +29,7 @@ func (u chatServer) newReactAgentLambda(ctx context.Context) (node *compose.Lamb
 	if err != nil {
 		return nil, err
 	}
-	promethesTool, err := tools.NewPrometheusAlertsTool()
+	promethesTool, err := tools.NewPrometheusAlertsTool(u.config.GetPrometheusURL())
 	if err != nil {
 		return nil, err
 	}

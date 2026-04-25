@@ -30,7 +30,6 @@ func InitLogger(level string, path string) *logrus.Logger {
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
 	logger.SetOutput(file) //设置日志文件
 	return logger
 }

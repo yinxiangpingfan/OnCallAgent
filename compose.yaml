@@ -24,6 +24,7 @@ services:
       - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.qnaigc.com/v1}
       - TENCENT_MCP_CLS_TYPE=${TENCENT_MCP_CLS_TYPE:-sse}
       - TENCENT_MCP_CLS_URL=${TENCENT_MCP_CLS_URL}
+      - PROMETHEUS_URL=${PROMETHEUS_URL:-http://prometheus:9090}
     depends_on:
       ollama:
         condition: service_healthy

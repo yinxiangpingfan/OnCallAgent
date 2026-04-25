@@ -14,6 +14,7 @@ type Config struct {
 	Qdrant     QdrantConfig               `mapstructure:"qdrant"`
 	OpenAI     OpenAIConfig               `mapstructure:"openai"`
 	TencentMCP map[string]MCPServerConfig `mapstructure:"tecentmcp"`
+	Prometheus PrometheusConfig           `mapstructure:"prometheus"`
 }
 
 // ServerConfig 服务器配置
@@ -48,6 +49,11 @@ type OpenAIConfig struct {
 type MCPServerConfig struct {
 	Type string `mapstructure:"type"`
 	URL  string `mapstructure:"url"`
+}
+
+// PrometheusConfig Prometheus 配置
+type PrometheusConfig struct {
+	URL string `mapstructure:"url"`
 }
 
 // InitConfig 从配置文件初始化配置
@@ -143,6 +149,9 @@ func setDefaults(v *viper.Viper) {
 	// TencentMCP 默认值
 	v.SetDefault("tecentmcp.cls-mcp-server.type", "sse")
 	v.SetDefault("tecentmcp.cls-mcp-server.url", "")
+
+	// Prometheus 默认值
+	v.SetDefault("prometheus.url", "http://localhost:9090")
 }
 
 // bindEnvVars 绑定环境变量
@@ -171,6 +180,9 @@ func bindEnvVars(v *viper.Viper) {
 	// TencentMCP 环境变量
 	_ = v.BindEnv("tecentmcp.cls-mcp-server.type", "TENCENT_MCP_CLS_TYPE")
 	_ = v.BindEnv("tecentmcp.cls-mcp-server.url", "TENCENT_MCP_CLS_URL")
+
+	// Prometheus 环境变量
+	_ = v.BindEnv("prometheus.url", "PROMETHEUS_URL")
 }
 
 // GetServerAddr 获取服务器完整地址
@@ -195,4 +207,12 @@ func (c *Config) GetTencentMCPServer(name string) (MCPServerConfig, bool) {
 	}
 	srv, ok := c.TencentMCP[name]
 	return srv, ok
+}
+
+// GetPrometheusURL 获取 Prometheus 地址
+func (c *Config) GetPrometheusURL() string {
+	if c.Prometheus.URL == "" {
+		return "http://localhost:9090"
+	}
+	return c.Prometheus.URL
 }

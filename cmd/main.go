@@ -12,6 +12,7 @@ import (
 	"OnCallAgent/pkg/config"
 	"OnCallAgent/pkg/log"
 	"context"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -67,4 +68,9 @@ func main() {
 	// 初始化gin
 	r := gin.Default()
 	router.InitRouter(ctx, r, log, config, runnerRAG, runner, chatModel)
+	// 启动 HTTP 服务
+	addr := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
+	if err = r.Run(addr); err != nil {
+		panic(err)
+	}
 }

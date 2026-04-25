@@ -12,8 +12,12 @@ import (
 
 // 获取腾讯云日志服务CLS转换为工具
 func GetLogMcpTool(cfg config.Config, ctx context.Context) ([]tool.BaseTool, error) {
-	cli, err := client.NewStreamableHttpClient(cfg.TencentMCP["cls-mcp-server"].URL)
+	cli, err := client.NewSSEMCPClient(cfg.TencentMCP["cls-mcp-server"].URL)
 	if err != nil {
+		return nil, err
+	}
+	// SSE 客户端需要先 Start 建立长连接
+	if err = cli.Start(ctx); err != nil {
 		return nil, err
 	}
 	initRequest := mcp.InitializeRequest{}

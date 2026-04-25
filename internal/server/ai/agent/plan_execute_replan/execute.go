@@ -24,7 +24,11 @@ func NewExecuteAgent(ctx context.Context, model *openai.ChatModel, cfg *config.C
 		return nil, err
 	}
 	toolls = append(toolls, retrieveTool)
-
+	promethesTool, err := tools.NewPrometheusAlertsTool()
+	if err != nil {
+		return nil, err
+	}
+	toolls = append(toolls, promethesTool)
 	logTools, err := tools.GetLogMcpTool(*cfg, ctx)
 	if err != nil {
 		return nil, err

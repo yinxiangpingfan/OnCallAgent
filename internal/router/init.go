@@ -2,14 +2,21 @@ package router
 
 import (
 	"OnCallAgent/internal/handler"
+	"OnCallAgent/internal/server/ai/agent/chat"
+	"OnCallAgent/internal/server/chatServer"
 	knowledgeindex "OnCallAgent/internal/server/knowledge_index"
+	"OnCallAgent/pkg/config"
+	"context"
 
+	"github.com/cloudwego/eino/components/document"
+	"github.com/cloudwego/eino/compose"
+	"github.com/cloudwego/eino/schema"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func InitRouter(r *gin.Engine, loger *logrus.Logger) {
+func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config *config.Config, runner compose.Runnable[document.Source, bool], runnerChat compose.Runnable[*chat.UserMessage, *schema.Message]) {
 	//cors
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
@@ -22,9 +29,12 @@ func InitRouter(r *gin.Engine, loger *logrus.Logger) {
 		})
 	})
 	//文件上传
-	uploder := knowledgeindex.NewFileUploaderServer(loger)
+	uploder := knowledgeindex.NewFileUploaderServer(loger, runner)
 	uploderHandler := handler.NewFileUploader("./docs/", uploder)
 	r.POST("/upload", uploderHandler.Upload())
 	//对话
-
+	chater := chatServer.NewChatServer(loger, runnerChat)
+	chaterHandler := handler.NewChatHandler(chater)
+	r.POST("/chat", chaterHandler.Chat())
+	r.GET("/chatStream", chaterHandler.ChatSream())
 }

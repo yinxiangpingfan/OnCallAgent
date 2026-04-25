@@ -29,9 +29,13 @@ func (u chatServer) newReactAgentLambda(ctx context.Context) (node *compose.Lamb
 	if err != nil {
 		return nil, err
 	}
+	promethesTool, err := tools.NewPrometheusAlertsTool()
+	if err != nil {
+		return nil, err
+	}
 	// 初始化所需的 tools
 	tools := compose.ToolsNodeConfig{
-		Tools: append([]tool.BaseTool{timeTool, retrieveTool}, logTools...),
+		Tools: append([]tool.BaseTool{timeTool, retrieveTool, promethesTool}, logTools...),
 	}
 
 	// 创建 agent

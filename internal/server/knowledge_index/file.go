@@ -22,8 +22,8 @@ type FileUploader interface {
 	Upload(ctx context.Context, file *multipart.FileHeader, path string) (string, error)
 }
 
-func NewFileUploaderServer(log *logrus.Logger) FileUploader {
-	return &fileUploader{logger: log}
+func NewFileUploaderServer(log *logrus.Logger, r compose.Runnable[document.Source, bool]) FileUploader {
+	return &fileUploader{logger: log, r: r}
 }
 
 func (u *fileUploader) Upload(ctx context.Context, file *multipart.FileHeader, path string) (string, error) {

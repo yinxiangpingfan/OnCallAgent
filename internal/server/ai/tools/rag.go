@@ -20,6 +20,13 @@ import (
 var ragToolGlobal *qdrant_retriever.Retriever
 var mu sync.Mutex
 
+// InitRAGTool 初始化 RAG 工具
+func InitRAGTool(retriever *qdrant_retriever.Retriever) {
+	mu.Lock()
+	defer mu.Unlock()
+	ragToolGlobal = retriever
+}
+
 func NewRetrieverServer(ctx context.Context, client *qdrant.Client, collectionName string, embeddder ollama.Embedder, ScoreThreshold float64, limit int) (*qdrant_retriever.Retriever, error) {
 	mu.Lock()
 	defer mu.Unlock()

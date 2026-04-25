@@ -22,7 +22,6 @@ config.json
 # Uploads
 /uploads/
 
-# Logs
-*.log
+
 
 myapp

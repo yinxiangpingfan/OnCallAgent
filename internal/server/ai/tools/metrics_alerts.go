@@ -96,11 +96,16 @@ func calculateActiveTime(activeAt string) string {
 	}
 }
 
+// PrometheusInput Prometheus 工具输入
+type PrometheusInput struct {
+	// 空输入参数，不需要任何字段
+}
+
 // 创建工具
 func NewPrometheusAlertsTool(url string) (tool.InvokableTool, error) {
 	return utils.InferTool("query_prometheus_alerts",
 		"Query active alerts from Prometheus alerting system. This tool retrieves all currently active/firing alerts including their labels, annotations, state, and values. Use this tool when you need to check what alerts are currently firing, investigate alert conditions, or monitor alert status.",
-		func(ctx context.Context, input struct{}) (output string, err error) {
+		func(ctx context.Context, input PrometheusInput) (output string, err error) {
 			result, err := queryPrometheusAlerts(url)
 			if err != nil {
 				return "", err

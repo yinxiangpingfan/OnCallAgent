@@ -9,12 +9,11 @@ import (
 
 // Config 应用配置结构
 type Config struct {
-	Server     ServerConfig               `mapstructure:"server"`
-	Embedder   EmbedderConfig             `mapstructure:"embedder"`
-	Qdrant     QdrantConfig               `mapstructure:"qdrant"`
-	OpenAI     OpenAIConfig               `mapstructure:"openai"`
-	TencentMCP map[string]MCPServerConfig `mapstructure:"tecentmcp"`
-	Prometheus PrometheusConfig           `mapstructure:"prometheus"`
+	Server     ServerConfig     `mapstructure:"server"`
+	Embedder   EmbedderConfig   `mapstructure:"embedder"`
+	Qdrant     QdrantConfig     `mapstructure:"qdrant"`
+	OpenAI     OpenAIConfig     `mapstructure:"openai"`
+	Prometheus PrometheusConfig `mapstructure:"prometheus"`
 }
 
 // ServerConfig 服务器配置
@@ -43,12 +42,6 @@ type OpenAIConfig struct {
 	APIKey  string `mapstructure:"api_key"`
 	Model   string `mapstructure:"model"`
 	APIBase string `mapstructure:"api_base"`
-}
-
-// MCPServerConfig 单个 MCP Server 配置
-type MCPServerConfig struct {
-	Type string `mapstructure:"type"`
-	URL  string `mapstructure:"url"`
 }
 
 // PrometheusConfig Prometheus 配置
@@ -87,43 +80,6 @@ func InitConfig(configFile string) (*Config, error) {
 	return &cfg, nil
 }
 
-// InitConfigFromEnv 从环境变量初始化配置
-// 环境变量命名规则：SERVER_HOST, SERVER_PORT, EMBEDDER_HOST 等
-func InitConfigFromEnv() (*Config, error) {
-	v := viper.New()
-
-	// 设置默认值
-	setDefaults(v)
-
-	// 绑定环境变量
-	bindEnvVars(v)
-
-	// 自动绑定环境变量
-	v.AutomaticEnv()
-
-	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal config from env: %w", err)
-	}
-
-	return &cfg, nil
-}
-
-// InitConfigWithFallback 优先使用配置文件，失败则回退到环境变量
-// configFile: 配置文件路径
-// 如果配置文件不存在或读取失败，将尝试从环境变量读取
-func InitConfigWithFallback(configFile string) (*Config, error) {
-	// 先尝试从配置文件读取
-	cfg, err := InitConfig(configFile)
-	if err == nil {
-		return cfg, nil
-	}
-
-	// 配置文件读取失败，尝试从环境变量读取
-	fmt.Printf("Config file read failed: %v, falling back to environment variables\n", err)
-	return InitConfigFromEnv()
-}
-
 // setDefaults 设置默认值
 func setDefaults(v *viper.Viper) {
 	// Server 默认值
@@ -146,43 +102,8 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("openai.model", "minimax/minimax-m2.1")
 	v.SetDefault("openai.api_base", "https://api.qnaigc.com/v1")
 
-	// TencentMCP 默认值
-	v.SetDefault("tecentmcp.cls-mcp-server.type", "sse")
-	v.SetDefault("tecentmcp.cls-mcp-server.url", "")
-
 	// Prometheus 默认值
 	v.SetDefault("prometheus.url", "http://localhost:9090")
-}
-
-// bindEnvVars 绑定环境变量
-// 环境变量格式：SERVER_HOST, SERVER_PORT, EMBEDDER_HOST 等
-func bindEnvVars(v *viper.Viper) {
-	// Server 环境变量
-	_ = v.BindEnv("server.host", "SERVER_HOST")
-	_ = v.BindEnv("server.port", "SERVER_PORT")
-
-	// Embedder 环境变量
-	_ = v.BindEnv("embedder.host", "EMBEDDER_HOST")
-	_ = v.BindEnv("embedder.port", "EMBEDDER_PORT")
-	_ = v.BindEnv("embedder.model", "EMBEDDER_MODEL")
-	_ = v.BindEnv("embedder.dimension", "EMBEDDER_DIMENSION")
-
-	// Qdrant 环境变量
-	_ = v.BindEnv("qdrant.host", "QDRANT_HOST")
-	_ = v.BindEnv("qdrant.port", "QDRANT_PORT")
-	_ = v.BindEnv("qdrant.collection", "QDRANT_COLLECTION")
-
-	// OpenAI 环境变量
-	_ = v.BindEnv("openai.api_key", "OPENAI_API_KEY")
-	_ = v.BindEnv("openai.model", "OPENAI_MODEL")
-	_ = v.BindEnv("openai.api_base", "OPENAI_API_BASE")
-
-	// TencentMCP 环境变量
-	_ = v.BindEnv("tecentmcp.cls-mcp-server.type", "TENCENT_MCP_CLS_TYPE")
-	_ = v.BindEnv("tecentmcp.cls-mcp-server.url", "TENCENT_MCP_CLS_URL")
-
-	// Prometheus 环境变量
-	_ = v.BindEnv("prometheus.url", "PROMETHEUS_URL")
 }
 
 // GetServerAddr 获取服务器完整地址
@@ -198,15 +119,6 @@ func (c *Config) GetEmbedderAddr() string {
 // GetQdrantAddr 获取 Qdrant 服务地址
 func (c *Config) GetQdrantAddr() string {
 	return fmt.Sprintf("%s:%d", c.Qdrant.Host, c.Qdrant.Port)
-}
-
-// GetTencentMCPServer 获取指定名称的 Tencent MCP Server 配置
-func (c *Config) GetTencentMCPServer(name string) (MCPServerConfig, bool) {
-	if c.TencentMCP == nil {
-		return MCPServerConfig{}, false
-	}
-	srv, ok := c.TencentMCP[name]
-	return srv, ok
 }
 
 // GetPrometheusURL 获取 Prometheus 地址

@@ -21,6 +21,7 @@ func InitLogger(level string, path string) *logrus.Logger {
 	default:
 		logger.SetLevel(logrus.ErrorLevel)
 	}
+	logger.SetReportCaller(true)
 	//普通日志格式
 	logger.SetFormatter(&logrus.TextFormatter{
 		DisableColors:   true,                      //强制不显示颜色

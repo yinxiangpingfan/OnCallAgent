@@ -1,0 +1,33 @@
+groups:
+- name: API_Alerts
+  rules:
+  # 高错误率告警：错误率 > 20%
+  - alert: HighErrorRate
+    expr: error_rate_per_minute > 20
+    for: 10s
+    labels:
+      severity: critical
+      team: backend
+    annotations:
+      summary: "接口 {{ $labels.handler }} 错误率激增"
+      description: "接口 {{ $labels.handler }} 当前错误率为 {{ $value }}%，大于阈值 20%。"
+
+  # 高延迟告警：P99 延迟 > 1 秒
+  - alert: HighLatency
+    expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (handler, le)) > 1.0
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      summary: "接口 {{ $labels.handler }} 响应延迟过高"
+      description: "接口 {{ $labels.handler }} 的 P99 延迟达到 {{ $value }} 秒。"
+
+  # CPU 高负载告警
+  - alert: HighCPUUsage
+    expr: process_cpu_usage_percent > 80
+    for: 10s
+    labels:
+      severity: critical
+    annotations:
+      summary: "进程 CPU 使用率过高"
+      description: "CPU 使用率达到 {{ $value }}%，可能导致服务拒绝响应。"

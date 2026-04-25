@@ -10,6 +10,7 @@ import (
 	"context"
 
 	"github.com/cloudwego/eino-ext/components/model/openai"
+	qdrant_retriever "github.com/cloudwego/eino-ext/components/retriever/qdrant"
 	"github.com/cloudwego/eino/components/document"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
@@ -18,7 +19,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config *config.Config, runner compose.Runnable[document.Source, bool], runnerChat compose.Runnable[*chat.UserMessage, *schema.Message], model *openai.ChatModel) {
+func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config *config.Config, runner compose.Runnable[document.Source, bool], runnerChat compose.Runnable[*chat.UserMessage, *schema.Message], model *openai.ChatModel, retriever *qdrant_retriever.Retriever) {
 	//cors
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
@@ -40,7 +41,7 @@ func InitRouter(ctx context.Context, r *gin.Engine, loger *logrus.Logger, config
 	r.POST("/chat", chaterHandler.Chat())
 	r.POST("/chatStream", chaterHandler.ChatSream())
 	//运维
-	planer := plan.NewPlanServer(*config, model, loger)
+	planer := plan.NewPlanServer(*config, model, loger, retriever)
 	planerH := handler.NewPlanHandler(planer)
 	r.GET("/plan", planerH.Plan())
 }

@@ -5,17 +5,18 @@ import (
 	"context"
 
 	"github.com/cloudwego/eino-ext/components/model/openai"
+	qdrant_retriever "github.com/cloudwego/eino-ext/components/retriever/qdrant"
 	"github.com/cloudwego/eino/adk"
 	"github.com/cloudwego/eino/adk/prebuilt/planexecute"
 	"github.com/cloudwego/eino/schema"
 )
 
-func BuildPlanExecuteReplanAgent(ctx context.Context, query string, cfg config.Config, model *openai.ChatModel) (string, []string, error) {
+func BuildPlanExecuteReplanAgent(ctx context.Context, query string, cfg config.Config, model *openai.ChatModel, retriever *qdrant_retriever.Retriever) (string, []string, error) {
 	planAgent, err := NewPlanAgent(ctx, model)
 	if err != nil {
 		return "", nil, err
 	}
-	executeAgent, err := NewExecuteAgent(ctx, model, &cfg)
+	executeAgent, err := NewExecuteAgent(ctx, model, &cfg, retriever)
 	if err != nil {
 		return "", nil, err
 	}
